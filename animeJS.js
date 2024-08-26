@@ -1,21 +1,22 @@
+let currentCharacterIndex = 0;
+let characters = [];
+
 document.getElementById('searchButton').addEventListener('click', function() {
-    /* Store data here */ = document.getElementById('searchInput').value.trim();
+    const searchInput = document.getElementById('searchInput').value.trim();
     if (searchInput) {
-        /* Store data here II */ = `https://api.jikan.moe/v4/characters?q=${encodeURIComponent(/*Handle data stored here*/)}&limit=1`;
+        const apiUrl = `https://api.jikan.moe/v4/characters?q=${encodeURIComponent(searchInput)}&limit=5`;
 
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
-                const character = data.data[0];
-                if (character) {
-                    /* Pick the HTML in which data will be displayed and store it. */
-                    characterDisplay.innerHTML = `
-                        <h2>${character.name}</h2>
-                        <img src="${character.images.jpg.image_url}" alt="${character.name}">
-                        <p>${character.about ? character.about : "No additional information available."}</p>
-                    `;
+                characters = data.data;
+                if (characters.length > 0) {
+                    currentCharacterIndex = 0;
+                    displayCharacter(characters[currentCharacterIndex]);
+                    document.getElementById('navigationButtons').style.display = characters.length > 1 ? 'block' : 'none';
                 } else {
                     displayError("Character not found.");
+                    document.getElementById('navigationButtons').style.display = 'none';
                 }
             })
             .catch(error => {
@@ -27,7 +28,42 @@ document.getElementById('searchButton').addEventListener('click', function() {
     }
 });
 
+document.getElementById('clearButton').addEventListener('click', function() {
+    clearDisplay();
+});
+
+document.getElementById('prevButton').addEventListener('click', function() {
+    if (characters.length > 0 && currentCharacterIndex > 0) {
+        currentCharacterIndex--;
+        displayCharacter(characters[currentCharacterIndex]);
+    }
+});
+
+document.getElementById('nextButton').addEventListener('click', function() {
+    if (characters.length > 0 && currentCharacterIndex < characters.length - 1) {
+        currentCharacterIndex++;
+        displayCharacter(characters[currentCharacterIndex]);
+    }
+});
+
+function displayCharacter(character) {
+    const characterDisplay = document.getElementById('characterDisplay');
+    characterDisplay.innerHTML = `
+        <h2>${character.name}</h2>
+        <img src="${character.images.jpg.image_url}" alt="${character.name}">
+        <p>${character.about ? character.about : "No additional information available."}</p>
+    `;
+}
+
 function displayError(message) {
     const characterDisplay = document.getElementById('characterDisplay');
     characterDisplay.innerHTML = `<p style="color: red;">${message}</p>`;
+    document.getElementById('navigationButtons').style.display = 'none';
+}
+
+function clearDisplay() {
+    const characterDisplay = document.getElementById('characterDisplay');
+    characterDisplay.innerHTML = ''; // Clear the displayed content
+    document.getElementById('searchInput').value = ''; // Clear the input field
+    document.getElementById('navigationButtons').style.display = 'none'; // Hide navigation buttons
 }
