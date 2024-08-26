@@ -10,8 +10,14 @@
     <div class="container">
         <h1>Search Anime Characters</h1>
         <input type="text" id="searchInput" placeholder="Enter character name...">
-        <!-- Button missing here -->
-        <!-- Div for displaying character here -->
+        <button id="clearButton">Clear</button> <!-- New Clear Button -->
+        <div id="navigationButtons" style="display: none;"> <!-- New Navigation Buttons -->
+            <button id="prevButton">Previous</button>
+            <button id="nextButton">Next</button>
+        </div>
+        <button id="searchButton">Search</button>
+        <div id="characterDisplay"></div>
+        
     </div>
     <script src="script.js"></script>
 </body>
